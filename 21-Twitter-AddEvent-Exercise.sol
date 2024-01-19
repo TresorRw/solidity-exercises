@@ -3,14 +3,13 @@
 // 1️⃣ Create Event for creating the tweet, called TweetCreated ✅
 // USE parameters like id, author, content, timestamp
 // 2️⃣ Emit the Event in the createTweet() function below  ✅
-// 3️⃣ Create Event for liking the tweet, called TweetLiked ✅ 
+// 3️⃣ Create Event for liking the tweet, called TweetLiked ✅
 // USE parameters like liker, tweetAuthor, tweetId, newLikeCount
 // 4️⃣ Emit the event in the likeTweet() function below  ✅
 
 pragma solidity ^0.8.22;
 
 contract Twitter {
-
     uint16 public MAX_TWEET_LENGTH = 280;
 
     struct Tweet {
@@ -20,10 +19,23 @@ contract Twitter {
         uint256 timestamp;
         uint256 likes;
     }
-    mapping(address => Tweet[] ) public tweets;
+    mapping(address => Tweet[]) public tweets;
     address public owner;
 
     // Define the events here 👇
+    event TweetCreated(
+        uint256 indexed id,
+        address indexed author,
+        string content,
+        uint256 timestamp
+    );
+
+    event TweetLiked(
+        address indexed liker,
+        address indexed tweetAuthor,
+        uint256 tweetId,
+        uint256 newLikeCount
+    );
 
     constructor() {
         owner = msg.sender;
@@ -39,7 +51,10 @@ contract Twitter {
     }
 
     function createTweet(string memory _tweet) public {
-        require(bytes(_tweet).length <= MAX_TWEET_LENGTH, "Tweet is too long bro!" );
+        require(
+            bytes(_tweet).length <= MAX_TWEET_LENGTH,
+            "Tweet is too long bro!"
+        );
 
         Tweet memory newTweet = Tweet({
             id: tweets[msg.sender].length,
@@ -50,30 +65,28 @@ contract Twitter {
         });
 
         tweets[msg.sender].push(newTweet);
+        emit TweetCreated(newTweet.id, msg.sender, _tweet, newTweet.timestamp);
     }
 
-    function likeTweet(address author, uint256 id) external {  
+    function likeTweet(address author, uint256 id) external {
         require(tweets[author][id].id == id, "TWEET DOES NOT EXIST");
 
         tweets[author][id].likes++;
-
+        emit TweetLiked(msg.sender, author, id, tweets[author][id].likes);
     }
 
     function unlikeTweet(address author, uint256 id) external {
         require(tweets[author][id].id == id, "TWEET DOES NOT EXIST");
         require(tweets[author][id].likes > 0, "TWEET HAS NO LIKES");
-        
+
         tweets[author][id].likes--;
     }
 
-    function getTweet( uint _i) public view returns (Tweet memory) {
+    function getTweet(uint _i) public view returns (Tweet memory) {
         return tweets[msg.sender][_i];
     }
 
-    function getAllTweets(address _owner) public view returns (Tweet[] memory ){
+    function getAllTweets(address _owner) public view returns (Tweet[] memory) {
         return tweets[_owner];
     }
-
 }
-
-
