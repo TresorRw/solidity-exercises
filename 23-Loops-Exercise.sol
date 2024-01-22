@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-// 1️⃣ Create a loop to calcualte all expenses for the user
-// HINT: Create a total expenses variable with uint type
-// HINT: Loop over expenses array with for loop
-// HINT: add up all expenses cost
-// HINT: return total expenses
+// 1️⃣ Create a loop to calcualte all expenses for the user (done)
+// HINT: Create a total expenses variable with uint type (done)
+// HINT: Loop over expenses array with for loop (done)
+// HINT: add up all expenses cost (done)
+// HINT: return total expenses (done)
 
 pragma solidity ^0.8.22;
 
@@ -28,6 +28,12 @@ contract ExpenseTracker {
     }
 
     function getTotalExpenses(address _user) public view returns (uint) {
-        // Your code here
+        uint256 totalExpenses = 0;
+        for (uint256 i = 0; i < expenses.length; i++) {
+            if(expenses[i].user == _user) {
+                totalExpenses += expenses[i].amount;
+            }
+        }
+        return totalExpenses;
     }
 }
