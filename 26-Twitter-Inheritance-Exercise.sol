@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 
-// 1️⃣ Import Ownable.sol contract from OpenZeppelin
+// 1️⃣ Import Ownable.sol contract from OpenZeppelin (done)
 // 2️⃣ Inherit Ownable Contract
-// 3️⃣ Replace current onlyOwner 
+// 3️⃣ Replace current onlyOwner
+
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 pragma solidity ^0.8.22;
 
-contract Twitter {
+contract Twitter is Ownable {
+    constructor() Ownable(msg.sender) {}
 
     uint16 public MAX_TWEET_LENGTH = 280;
 
@@ -17,31 +20,36 @@ contract Twitter {
         uint256 timestamp;
         uint256 likes;
     }
-    mapping(address => Tweet[] ) public tweets;
-    address public owner;
+    mapping(address => Tweet[]) public tweets;
 
     // Define the events
-    event TweetCreated(uint256 id, address author, string content, uint256 timestamp);
-    event TweetLiked(address liker, address tweetAuthor, uint256 tweetId, uint256 newLikeCount);
-    event TweetUnliked(address unliker, address tweetAuthor, uint256 tweetId, uint256 newLikeCount);
-
-    constructor() {
-        owner = msg.sender;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "YOU ARE NOT THE OWNER!");
-        _;
-    }
+    event TweetCreated(
+        uint256 id,
+        address author,
+        string content,
+        uint256 timestamp
+    );
+    event TweetLiked(
+        address liker,
+        address tweetAuthor,
+        uint256 tweetId,
+        uint256 newLikeCount
+    );
+    event TweetUnliked(
+        address unliker,
+        address tweetAuthor,
+        uint256 tweetId,
+        uint256 newLikeCount
+    );
 
     function changeTweetLength(uint16 newTweetLength) public onlyOwner {
         MAX_TWEET_LENGTH = newTweetLength;
     }
 
-    function getTotalLikes(address _author) external view returns(uint) {
+    function getTotalLikes(address _author) external view returns (uint) {
         uint totalLikes;
 
-        for( uint i = 0; i < tweets[_author].length; i++){
+        for (uint i = 0; i < tweets[_author].length; i++) {
             totalLikes += tweets[_author][i].likes;
         }
 
@@ -49,7 +57,10 @@ contract Twitter {
     }
 
     function createTweet(string memory _tweet) public {
-        require(bytes(_tweet).length <= MAX_TWEET_LENGTH, "Tweet is too long bro!" );
+        require(
+            bytes(_tweet).length <= MAX_TWEET_LENGTH,
+            "Tweet is too long bro!"
+        );
 
         Tweet memory newTweet = Tweet({
             id: tweets[msg.sender].length,
@@ -62,10 +73,15 @@ contract Twitter {
         tweets[msg.sender].push(newTweet);
 
         // Emit the TweetCreated event
-        emit TweetCreated(newTweet.id, newTweet.author, newTweet.content, newTweet.timestamp);
+        emit TweetCreated(
+            newTweet.id,
+            newTweet.author,
+            newTweet.content,
+            newTweet.timestamp
+        );
     }
 
-    function likeTweet(address author, uint256 id) external {  
+    function likeTweet(address author, uint256 id) external {
         require(tweets[author][id].id == id, "TWEET DOES NOT EXIST");
 
         tweets[author][id].likes++;
@@ -77,20 +93,17 @@ contract Twitter {
     function unlikeTweet(address author, uint256 id) external {
         require(tweets[author][id].id == id, "TWEET DOES NOT EXIST");
         require(tweets[author][id].likes > 0, "TWEET HAS NO LIKES");
-        
+
         tweets[author][id].likes--;
 
-        emit TweetUnliked(msg.sender, author, id, tweets[author][id].likes );
+        emit TweetUnliked(msg.sender, author, id, tweets[author][id].likes);
     }
 
-    function getTweet( uint _i) public view returns (Tweet memory) {
+    function getTweet(uint _i) public view returns (Tweet memory) {
         return tweets[msg.sender][_i];
     }
 
-    function getAllTweets(address _owner) public view returns (Tweet[] memory ){
+    function getAllTweets(address _owner) public view returns (Tweet[] memory) {
         return tweets[_owner];
     }
-
 }
-
-
