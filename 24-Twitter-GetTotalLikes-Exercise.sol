@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-// 1️⃣ Create a function, getTotalLikes, to get total Tweet Likes for the user
-// USE parameters of author
-// 2️⃣ Loop over all the tweets 
-// 3️⃣ Sum up totalLikes 
-// 4️⃣ Return totalLikes 
+// 1️⃣ Create a function, getTotalLikes, to get total Tweet Likes for the user (done)
+// USE parameters of author (done)
+// 2️⃣ Loop over all the tweets (done)
+// 3️⃣ Sum up totalLikes (done)
+// 4️⃣ Return totalLikes (done)
 
 pragma solidity ^0.8.22;
 
@@ -81,6 +81,14 @@ contract Twitter {
 
     function getAllTweets(address _owner) public view returns (Tweet[] memory ){
         return tweets[_owner];
+    }
+
+    function getTotalLikes(address author) public view returns (uint) {
+        uint256 totalLikes = 0;
+        for (uint i = 0; i < tweets[author].length; i++) {
+            totalLikes += tweets[author][i].likes;
+        }
+        return totalLikes;
     }
 
 }
