@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.22;
 
-// 1️⃣ Imherit from the Multiplayer Game
-// 2️⃣ Call the parent joinGame() function
+// 1️⃣ Inherit from the Multiplayer Game (done)
+// 2️⃣ Call the parent joinGame() function (done)
 // HINT: you might have to use the super keyword
-// 3️⃣ Increment playerCount in joinGame() function
+// 3️⃣ Increment playerCount in joinGame() function (done)
 
 // MultiplayerGame contract
 contract MultiplayerGame {
@@ -17,7 +17,7 @@ contract MultiplayerGame {
 }
 
 // Game contract inheriting from MultiplayerGame
-contract Game {
+contract Game is MultiplayerGame {
     string public gameName;
     uint256 public playerCount;
 
@@ -31,6 +31,7 @@ contract Game {
     }
 
     function joinGame() public override {
-       
+       super.joinGame();
+       playerCount++;
     }
 }
